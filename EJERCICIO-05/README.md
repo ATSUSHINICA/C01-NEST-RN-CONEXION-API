@@ -1,34 +1,36 @@
-# C01 · NEST + RN
+# EJERCICIO 05 · CONEXIÓN (Mi primera conexión)
 
 ## Qué he aprendido
-* **Peticiones HTTP con `fetch` en React Native**: Aprendí a conectar una aplicación móvil con una API de NestJS usando el método asíncrono `fetch` para realizar peticiones `GET`.
-* **Manejo de Estado (`useState`)**: Aprendí a almacenar la respuesta recibida (`{ texto: "..." }`) y el estado de la conexión (`conectado ✓` / `desconectado`) para actualizar la interfaz dinámicamente.
-* **Componentes visuales y maquetación**: Utilicé `SafeAreaView` de `react-native-safe-area-context` para evitar solapamientos con la parte superior de la pantalla y el componente `Pressable` para renderizar el botón principal de acción.
+* **Comunicación Full Stack con `fetch`**: Aprendí a realizar peticiones HTTP asíncronas (`fetch` + `await`) desde una aplicación móvil en React Native hacia un backend desarrollado con NestJS.
+* **Procesamiento de datos JSON**: Aprendí a convertir la respuesta HTTP recibida en formato JSON (`await respuesta.json()`) para consumirla en la aplicación.
+* **Configuración de red y direcciones IP**: Comprendí por qué el dispositivo móvil (físico o emulador) no puede referenciar al ordenador mediante `localhost` y la importancia de configurar la dirección IP local de la red para establecer la comunicación.
 
 ---
 
 ## Respuesta a la pregunta de comprensión
 
-**¿Por qué `respuesta.json()` devuelve un objeto y no se puede comparar directamente con una cadena de texto (String)?**
-> **Respuesta:** Porque `fetch` analiza el cuerpo de la respuesta HTTP enviada por NestJS y lo transforma automáticamente en un objeto de JavaScript. Al hacer la comparación `datos === '{"texto": "..."}'`, se compara una referencia de objeto con un string, lo cual siempre dará `false`. Para evaluar el mensaje correctamente es necesario acceder directamente a la propiedad del objeto devuelto, como por ejemplo `datos.texto === '¡Conexión conseguida! 🚀'`.
+**¿Por qué el móvil necesita conocer la IP del equipo donde se ejecuta NestJS?**
+> **Respuesta:** Porque cumple una responsabilidad concreta dentro del flujo que acabamos de construir. En el contexto del dispositivo móvil (o emulador), la palabra clave `localhost` o la IP `127.0.0.1` hace referencia al propio teléfono y no a tu ordenador. Para que el móvil pueda enviar peticiones HTTP y comunicarse a través de la red local con el servidor NestJS que corre en tu equipo, es imprescindible especificar la dirección IP local de tu ordenador.
 
 ---
 
 ## Qué he modificado
 
-- **`App.tsx`**:
-  - Definí el estado local usando `useState` para guardar los datos recibidos del backend y el indicador de estado.
-  - Implementé la función asíncrona `verificarConexion` para realizar la petición `GET` a `${API_URL}/mensaje`.
-  - Diseñé la tarjeta visual (`card`) para renderizar dinámicamente la respuesta enviada por NestJS.
-  - Maqueté el botón utilizando `Pressable` con el estilo e interfaz requeridos (`ACCIÓN PRINCIPAL`).
+1. **`backend/src/mensaje/mensaje.controller.ts`**:
+   * Se creó el controlador de NestJS anotado con `@Controller('mensaje')` y la ruta `@Get()` que responde al endpoint `/mensaje` devolviendo el JSON `{ texto: '¡Conexión conseguida! 🚀' }`.
+
+2. **`frontend/App.tsx`**:
+   * Se configuró la constante `API_URL` utilizando la IP local del ordenador en lugar de `localhost` (ejemplo: `http://192.168.x.x:3000`).
+   * Se creó la función asíncrona `cargarMensaje` que ejecuta la petición HTTP usando `await fetch(API_URL + '/mensaje')` y extrae los datos con `.json()`.
+   * Se enlazó la ejecución de la petición a la acción principal del usuario (botón/pressable).
 
 ---
 
 ## Resultado
 
-Al pulsar el botón **ACCIÓN PRINCIPAL**, la app en React Native se conecta al backend en NestJS en la ruta `GET /mensaje`, actualizando los componentes en pantalla:
-
-* **Respuesta visual:**
+Al interactuar con la aplicación en React Native:
+* **Petición enviada:** `GET http://TU_IP:3000/mensaje`
+* **Respuesta recibida desde NestJS:**
   ```json
   {
     "texto": "¡Conexión conseguida! 🚀"
